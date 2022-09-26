@@ -19,8 +19,9 @@ $('.login-btn').click(function () {
             type: "post",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "mobile": $('[name=mobile]').val(),
-                "password": $('[name=password]').val()
+                "loginName": $('[name=loginName]').val(),
+                "password": $('[name=password]').val(),
+                "uscc": $('[name=uscc]').val()
             }),
             dataType: 'json',
             success: function (res) {
@@ -44,13 +45,3 @@ $('.login-btn').click(function () {
         });
     }, 400);
 })
-
-// 绑定回车事件
-$('[name=mobile],[name=password]').bind('keypress', function (event) {
-    if (event.keyCode == "13") {
-        $('.login-btn').click();
-    }
-});
-
-// 输入框获取焦点
-$("[name=mobile]").focus();

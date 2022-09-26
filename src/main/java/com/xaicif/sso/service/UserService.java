@@ -29,18 +29,9 @@ public class UserService {
     private UserRepo userRepo;
 
     public RestResp login(DoLoginDto doLoginDto) {
-        User user = userRepo.findByMobile(doLoginDto.getMobile());
-        if (user == null) {
+        User user = userRepo.findByUsccAndLoginName(doLoginDto.getUscc(), doLoginDto.getLoginName());
+        if (user == null || !EncryptUtils.sha256Hex(doLoginDto.getPassword()).equals(user.getPassword())) {
             return RestResp.fail("账号验证失败");
-        }
-        if (StringUtils.isNotBlank(doLoginDto.getPassword())) {
-            if (!EncryptUtils.encodeSHA256(doLoginDto.getPassword()).equals(user.getPassword())) {
-                return RestResp.fail("账号验证失败");
-            }
-        } else {
-            if (!"123456".equals(doLoginDto.getCaptcha())) {
-                return RestResp.fail("验证码无效");
-            }
         }
         StpUtil.stpLogic.getConfig().cookie.setHttpOnly(true);
         StpUtil.login(user.getUserId());
@@ -53,30 +44,32 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     public RestResp pushUser(PushUserDto pushUserDto) {
-        User user = userRepo.findByMobile(pushUserDto.getMobile());
+        User user = userRepo.findByUsccAndLoginName(pushUserDto.getUscc(), pushUserDto.getLoginName());
         if (user == null) {
             user = new User();
             user.setUserId(IdGenerateUtils.generateNumberId("SSO", 10));
+            user.setLoginName(pushUserDto.getLoginName());
+            user.setCompany(pushUserDto.getCompany());
             user.setMobile(pushUserDto.getMobile());
             user.setCfcaKeyId(pushUserDto.getCfcaKeyId());
             user.setUscc(pushUserDto.getUscc());
-            user.setPassword(EncryptUtils.encodeSHA256(defaultPassword));
+            user.setPassword(EncryptUtils.sha256Hex(defaultPassword));
             user.setRealName(pushUserDto.getRealName());
             user.setIdCard(pushUserDto.getIdCard());
 
             List<Object> sources = new ArrayList<>();
             sources.add(pushUserDto.getClientCode());
             user.setSource(JSON.toJSONString(sources));
-
-            userRepo.save(user);
         } else {
-            List<String> sources = JSON.parseArray(user.getSource(), String.class);
+            List<String> sources = StringUtils.isNotBlank(user.getSource()) ? JSON.parseArray(user.getSource(), String.class) : new ArrayList<>();
             if (!sources.contains(pushUserDto.getClientCode())) {
                 sources.add(pushUserDto.getClientCode());
                 user.setSource(JSON.toJSONString(sources));
-                userRepo.save(user);
             }
         }
+        user.setLastModifyTime(System.currentTimeMillis());
+        user.setLastModifyClient(pushUserDto.getClientCode());
+        userRepo.save(user);
         return RestResp.success(user.getUserId());
     }
 }

@@ -9,9 +9,13 @@ public class UserInfoResp {
 
     private String userId;
 
+    private String loginName;
+
     private String mobile;
 
     private String cfcaKeyId;
+
+    private String company;
 
     private String uscc;
 
@@ -19,8 +23,10 @@ public class UserInfoResp {
 
     private String idCard;
 
-    public UserInfoResp(String userId, String mobile, String cfcaKeyId, String uscc, String realName, String idCard) {
+    public UserInfoResp(String userId, String loginName, String mobile, String cfcaKeyId, String company, String uscc, String realName, String idCard) {
         this.userId = userId;
+        this.loginName = loginName;
+        this.company = company;
         this.mobile = mobile;
         this.cfcaKeyId = cfcaKeyId;
         this.uscc = uscc;

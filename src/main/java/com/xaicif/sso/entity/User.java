@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@Table(name = "sso_user")
+@Table(name = "sso_user", uniqueConstraints = {@UniqueConstraint(columnNames = {"uscc", "loginName"})})
 @Entity
 @NoArgsConstructor
 public class User {
@@ -15,20 +15,30 @@ public class User {
     private Long id;
     @Column(unique = true)
     private String userId;
-    @Column(unique = true)
-    private String mobile;
-    //统一社会信用代码
+    //登录名 企业内唯一
+    @Column(nullable = false)
+    private String loginName;
+    //公司统一社会信用代码
+    @Column(nullable = false)
     private String uscc;
-    //U盾ID
-    private String cfcaKeyId;
+    //公司名称
+    private String company;
+    //登录密码
     private String password;
 
-    //clientCode
-    private String source;
-
+    //手机号 不唯一
+    private String mobile;
     //实名信息 名称
     private String realName;
     //实名信息 身份证号
     private String idCard;
+    //U盾序列号
+    private String cfcaKeyId;
+
+    //clientCode  数据来源
+    private String source;
+
+    private Long lastModifyTime;
+    private String lastModifyClient;
 
 }

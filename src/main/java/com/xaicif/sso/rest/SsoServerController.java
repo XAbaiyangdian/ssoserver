@@ -19,6 +19,7 @@ import com.xaicif.sso.service.UserService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,12 +46,9 @@ public class SsoServerController {
     }
 
     @PostMapping("/sso/doLogin")
-    public RestResp doLogin(@RequestBody DoLoginDto doLoginDto) {
-        if (StringUtils.isBlank(doLoginDto.getMobile())) {
-            return RestResp.fail("请输入手机号");
-        }
-        if (StringUtils.isBlank(doLoginDto.getPassword()) && StringUtils.isBlank(doLoginDto.getCaptcha())) {
-            return RestResp.fail("请输入密码或短信验证码");
+    public RestResp doLogin(@Valid @RequestBody DoLoginDto doLoginDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return RestResp.fail(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
         return userService.login(doLoginDto);
     }
@@ -67,7 +65,7 @@ public class SsoServerController {
             if (user == null) {
                 return RestResp.fail("无效ticket：" + checkTicketDto.getTicket());
             }
-            return RestResp.success(new CheckTicketResp(user.getUserId(), user.getMobile(), user.getCfcaKeyId()));
+            return RestResp.success(new CheckTicketResp(user.getUserId(), user.getLoginName(), user.getUscc(), user.getMobile(), user.getCfcaKeyId()));
         }, checkTicketDto);
     }
 
@@ -113,7 +111,14 @@ public class SsoServerController {
     public RestResp getUserInfo(@RequestBody UserInfoDto userInfoDto) throws Exception {
         return checkParamSignThenExecute(baseSignRequest -> {
             User user = userService.getUser(userInfoDto.getUserId());
-            UserInfoResp userInfoResp = new UserInfoResp(user.getUserId(), user.getMobile(), user.getCfcaKeyId(), user.getUscc(), user.getRealName(), user.getIdCard());
+            UserInfoResp userInfoResp = new UserInfoResp(user.getUserId(),
+                    user.getLoginName(),
+                    user.getMobile(),
+                    user.getCfcaKeyId(),
+                    user.getCompany(),
+                    user.getUscc(),
+                    user.getRealName(),
+                    user.getIdCard());
             return RestResp.success(userInfoResp);
         }, userInfoDto);
     }

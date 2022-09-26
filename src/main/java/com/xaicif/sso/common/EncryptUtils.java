@@ -1,32 +1,13 @@
 package com.xaicif.sso.common;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class EncryptUtils {
-    public static String encodeSHA256(String str){
-        return encrypt(str,"SHA-256");
+    public static String sha256Hex(String str){
+        return DigestUtils.sha256Hex(str);
     }
-
-    private static String encrypt(String src,String type){
-        if(src==null){
-            return null;
-        }
-        MessageDigest md=null;
-        String result=null;
-        byte[] b=src.getBytes();
-        try {
-            md=MessageDigest.getInstance(type);
-            md.update(b);
-
-            result=new BigInteger(1,md.digest()).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public static String md5Hex(String str){
+        return DigestUtils.md5Hex(str);
     }
-    private EncryptUtils(){}
 
 }

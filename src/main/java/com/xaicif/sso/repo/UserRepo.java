@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
 
-    User findByMobile(String mobile);
     User findByUserId(String userId);
+
+    User findByUsccAndLoginName(String uscc, String loginName);
 }
