@@ -64,9 +64,13 @@
             "status": 1, 
             "message": "success", 
             "data": {
-                "userId": "", 
-                "mobile": "", 
-                "cfcaKeyId": ""
+                "userId": "",   //统一登录中心分配的userId可以唯一识别一个用户
+                "loginName": "", //在各支付链中 loginName 和 uscc 唯一识别一个用户，loginName在不同企业下可以重复。
+                "uscc": "",   //企业的统一社会信用代码
+                "mobile": "",   //手机号 可以重复
+                "cfcaKeyId": "",  //UKey证书编号
+                "company": "", //企业名称
+                "companyRole": ""  //三种类型 总包 分包 总包,分包
             }
         }
 
@@ -99,12 +103,14 @@
     type: POST
     content-type: application/json
     params: 
-        mobile String 必须
-        uscc String 必须
-        cfcaKeyId String 必须
-        realName String 必须
-        idCard String 必须
-        timestamp Long 必须
+        loginName String 必须 登录名 
+        uscc String 必须 企业统一社会信用代码
+        company String 必须 企业名称
+        mobile String 必须   手机号
+        realName String 必须  真实姓名
+        idCard String 必须   身份证号
+        cfcaKeyId String 非必须 UKey证书编号
+        timestamp Long 必须 
         clientCode String 必须
         signature String 必须
     response:
@@ -130,12 +136,15 @@
              "status": 1, 
              "message": "success", 
              "data": {
-                  "userId": "",
-                  "mobile": "",
-                  "cfcaKeyId": "",
-                  "uscc": "",
-                  "realName": "",
-                  "idCard": "",
+                  "userId": "",   //统一登录中心分配的userId可以唯一识别一个用户
+                  "loginName": "",  //在各支付链中 loginName 和 uscc 唯一识别一个用户，loginName在不同企业下可以重复。
+                  "mobile": "",  //手机号
+                  "cfcaKeyId": "", //UKey证书编号
+                  "company": "", //企业名称
+                  "uscc": "",   //企业统一社会信用代码
+                  "companyRole": "",  //三种类型 总包 分包  总包,分包
+                  "realName": "",  //真实姓名
+                  "idCard": "",   //身份证号
              }
         }
 
