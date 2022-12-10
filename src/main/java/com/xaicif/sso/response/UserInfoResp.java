@@ -23,7 +23,9 @@ public class UserInfoResp {
 
     private String idCard;
 
-    public UserInfoResp(String userId, String loginName, String mobile, String cfcaKeyId, String company, String uscc, String realName, String idCard) {
+    private String companyRole;
+
+    public UserInfoResp(String userId, String loginName, String mobile, String cfcaKeyId, String company, String uscc, String realName, String idCard, String companyRole) {
         this.userId = userId;
         this.loginName = loginName;
         this.company = company;
@@ -32,5 +34,6 @@ public class UserInfoResp {
         this.uscc = uscc;
         this.realName = realName;
         this.idCard = idCard;
+        this.companyRole = companyRole;
     }
 }

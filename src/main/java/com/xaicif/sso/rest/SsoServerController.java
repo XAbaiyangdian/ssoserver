@@ -65,7 +65,7 @@ public class SsoServerController {
             if (user == null) {
                 return RestResp.fail("无效ticket：" + checkTicketDto.getTicket());
             }
-            return RestResp.success(new CheckTicketResp(user.getUserId(), user.getLoginName(), user.getUscc(), user.getMobile(), user.getCfcaKeyId()));
+            return RestResp.success(new CheckTicketResp(user.getUserId(), user.getLoginName(), user.getUscc(), user.getMobile(), user.getCfcaKeyId(), user.getCompany(), "总包"));
         }, checkTicketDto);
     }
 
@@ -118,7 +118,8 @@ public class SsoServerController {
                     user.getCompany(),
                     user.getUscc(),
                     user.getRealName(),
-                    user.getIdCard());
+                    user.getIdCard(),
+                    "总包");
             return RestResp.success(userInfoResp);
         }, userInfoDto);
     }
