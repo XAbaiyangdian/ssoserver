@@ -13,54 +13,19 @@ public class SignUtil {
     public static String sign(Map map, String secretKey) {
         String linkString = createLinkString(map);
         linkString += "&secretKey=" + secretKey;
-        return encryptSHA256(linkString).toUpperCase();
+        return EncryptUtils.sha256Hex(linkString).toUpperCase();
     }
 
     public static Boolean checkSign(Map map, String signature, String secretKey) {
         String linkString = createLinkString(map);
         linkString += "&secretKey=" + secretKey;
-        if (encryptSHA256(linkString).toUpperCase().equals(signature)) {
+        if (EncryptUtils.sha256Hex(linkString).toUpperCase().equals(signature)) {
             return true;
         }
         System.out.println("checkSign: " + linkString);
         return false;
     }
     
-    public static String encryptSHA256(String src) {
-        if (src == null) {
-            return null;
-        }
-        MessageDigest md = null;
-        String result = null;
-        byte[] b = src.getBytes();
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-            md.update(b);
-
-            result = new BigInteger(1, md.digest()).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public static String encryptSHA256(byte[] b) {
-        if (b == null) {
-            return null;
-        }
-        MessageDigest md = null;
-        String result = null;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-            md.update(b);
-
-            result = new BigInteger(1, md.digest()).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     public static String createLinkString(Map<String, Object> params) {
         List<String> keys = new ArrayList(params.keySet());
         Collections.sort(keys);
