@@ -1,14 +1,36 @@
 ## 单点登录相关示例说明
 
-下面以客户端地址(client.com)，ssoserver地址(sso.com)举例
+下面以客户端地址(client.com)，ssoserver地址(ssoserver.com)举例
 
-### 统一登录交互步骤：
+### 统一登录交互方式1：
+
+    1. 用户访问客户端首页("http://client.com/index")
+    
+    2. 页面检测到用户未登录则携带redirect参数用来记录当前页面地址，跳转到ssoserver的认证地址("http://ssoserver.com/sso/auth?redirect='http://client.com/index'")。
+    
+    3. ssoserver的认证接口判断用户
+    
+        未登录：
+    
+        给用户返回统一登录页面，用户在统一登录页面成功登录后，ssoserver签发ticket并将请求重定向到第2步中提供的redirect地址("http://client.com/index?ticket=xxxxxx")
+    
+        已登录：
+    
+        直接签发ticket并将请求重定向到第2步中提供的redirect地址("http://client.com/index?ticket=xxxxxx")
+    
+    4. 客户端首页判断路径参数中ticket有值，使用ticket参数向客户端后台接口发起登录请求，客户端后台登录接口向ssoserver发起请求校验ticket("http://sso.com/sso/checkTicket)
+       
+       校验ticket成功得到用户信息后客户端继续自己的登录逻辑（jwttoken+header或者cookie等）
+
+       在校验ticket时会携带客户端的统一登出地址("http://client.com/custom/logout_notify"), 当有任意客户端执行了登出操作后， ssoserver会通知其他相关的客户端进行统一登出操作。
+
+### 统一登录交互方式2：
 
     1. 用户访问客户端首页("http://client.com/index")
     
     2. 页面检测到用户未登录则携带back参数用来记录当前页面地址，跳转到客户端登录地址("http://client.com/custom/login?back='http://client.com/index'")。
     
-    3. 客户端登录接口构建登录回调地址redirect并将请求重定向到ssoserver的认证地址("http://sso.com/sso/auth/?redirect='http://client.com/custom/login?back="http://client.com/index"'"),back作为redirect地址中的一个参数，所以url中会有两个问号。
+    3. 客户端登录地址构建登录回调地址redirect并将请求重定向到ssoserver的认证地址("http://ssoserver.com/sso/auth/?redirect='http://client.com/custom/login?back="http://client.com/index"'"),back作为redirect地址中的一个参数，所以url中会有两个问号。
     
     4. ssoserver的认证接口判断用户
     
@@ -20,8 +42,11 @@
     
         直接签发ticket并将请求重定向到第3步中提供的redirect地址("http://client.com/custom/login?ticket=xxxxxx&back='http://client.com/index'")
     
-    5. 客户端的登录回调地址在接收到重定向请求后，判断ticket有值，使用ticket参数向ssoserver发起请求来校验ticket("http://sso.com/sso/checkTicket), 验证成功后会得到登录人的userId和mobile, 
-       客户端根据响应的结果来对用户进行客户端的登陆操作, 在校验ticket时会携带客户端的统一登出地址("http://client.com/custom/logout_notify"), 当有任意客户端执行了登出操作后， ssoserver会通知其他相关的客户端进行统一登出操作。
+    5. 客户端的登录回调地址在接收到重定向请求后，判断ticket有值，使用ticket参数向ssoserver发起请求来校验ticket("http://ssoserver.com/sso/checkTicket), 
+      
+       校验ticket成功得到用户信息后客户端继续自己的登录逻辑（jwttoken+header或者cookie等）
+
+       在校验ticket时会携带客户端的统一登出地址("http://client.com/custom/logout_notify"), 当有任意客户端执行了登出操作后， ssoserver会通知其他相关的客户端进行统一登出操作。
 
 ### 统一登出交互步骤：
     
